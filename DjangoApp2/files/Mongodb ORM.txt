@@ -1,0 +1,64 @@
+***Object-Relational Mapping (ORM) approach with MongoDB using the PyMongo library***
+
+
+Install PyMongo:
+pip install pymongo
+
+
+Import Required Modules:
+from pymongo import MongoClient
+from pymongo.errors import PyMongoError
+
+
+Connect to MongoDB:
+client = MongoClient('mongodb://localhost:27017/')
+db = client['mydatabase']
+
+
+Define a Model:
+class User:
+    def __init__(self, name, email):
+        self.name = name
+        self.email = email
+
+
+Create and Save Documents:
+def save_user(user):
+    try:
+        collection = db['users']
+        user_dict = {'name': user.name, 'email': user.email}
+        result = collection.insert_one(user_dict)
+        print(f"User saved with ID: {result.inserted_id}")
+    except PyMongoError as e:
+        print(f"Error occurred: {str(e)}")
+
+
+Query Documents:
+def get_users():
+    try:
+        collection = db['users']
+        users = collection.find()
+        for user in users:
+            print(f"User: {user['name']} - Email: {user['email']}")
+    except PyMongoError as e:
+        print(f"Error occurred: {str(e)}")
+
+
+Update Documents:
+def update_user_email(user_id, new_email):
+    try:
+        collection = db['users']
+        result = collection.update_one({'_id': user_id}, {'$set': {'email': new_email}})
+        print(f"Modified {result.modified_count} user(s).")
+    except PyMongoError as e:
+        print(f"Error occurred: {str(e)}")
+
+        
+Delete Documents:
+def delete_user(user_id):
+    try:
+        collection = db['users']
+        result = collection.delete_one({'_id': user_id})
+        print(f"Deleted {result.deleted_count} user(s).")
+    except PyMongoError as e:
+        print(f"Error occurred: {str(e)}")
